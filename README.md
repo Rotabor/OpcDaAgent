@@ -1,5 +1,5 @@
 # OpcDaAgent
-OpcDaAgent is the Windows service which acts as the OPC DA client and .Net Remotiong server to provide data for the OpenHistorian universal adapter (https://github.com/TBD).
+OpcDaAgent is the Windows service which acts as the OPC DA client and .Net Remotiong server to provide data for the OpenHistorian universal adapter (https://github.com/Rotabor/OpenHistorianRemoteDataAdapter).
 It uses OPC Foundation Classic OPC .NET libraries.
 
 **Disclaimer**: This code is provided as is, without any warranty or obligation. It requires you to have knowledge of C# programming, openHistorian and other products/libraries/technologies in use. It has to be compiled.
@@ -15,5 +15,6 @@ remotehost - the of OpenHistorian universal adapter's host
 host - OPC DA server's host, typically is the local server, but the remote server can be referred 
 server - the name of the OPC DA server.
 5. Install the service on the target machine:
-6. Start OpcDaAgent service:
+Sc create OpcDaAgent binPath= FOLDERPATH\OpcDaAgent.exe DisplayName= OpcDaAgent start= auto obj= .\USERNAME password= PASSWORD
+6. Start OpcDaAgent service
 7. Examine the log file to see if there are any errors.
