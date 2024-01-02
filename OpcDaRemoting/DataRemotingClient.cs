@@ -7,7 +7,9 @@ using System.Runtime.Remoting.Lifetime;
 using System.Threading;
 
 namespace nsDataRemoting {
-
+    /// <summary>
+    /// Remote datasource source server object
+    /// </summary>
     public class DataRemotingClient : MarshalByRefObject, IDisposable {
 
         #region [Fields]
@@ -47,7 +49,10 @@ namespace nsDataRemoting {
         #endregion Fields
 
         ~DataRemotingClient() { if (!_disposed) Dispose(); }
-
+        /// <summary>
+        /// Called by adapters' Initialize method
+        /// </summary>
+        /// <returns>True for successful initialization</returns>
         public bool Initialize() {
             bool result = false;
             try {
@@ -60,11 +65,17 @@ namespace nsDataRemoting {
             TraceMsg($"Initialize: {result}");
             return result;
         }
-
+        /// <summary>
+        /// Timer event to release unmanaged recources in case of lease time expiration
+        /// </summary>
+        /// <param name="state"></param>
         void OnFire(object state) {
             if (_lts.CurrentState == LeaseState.Expired) { _tmr?.Dispose(); Dispose(); TraceMsg($"{_lts.CurrentState}"); }
         }
-
+        /// <summary>
+        /// Called by adapters' AttemptConnection method
+        /// </summary>
+        /// <returns>True for successful connection</returns>
         public bool Connect() {
             bool result = false;
             try {
@@ -75,7 +86,11 @@ namespace nsDataRemoting {
             TraceMsg($"Connect: {result}");
             return result;
         }
-
+        /// <summary>
+        /// Called by adapters' OnConnected method 
+        /// </summary>
+        /// <param name="sa">Array of required parameters</param>
+        /// <returns>True for successful subscription</returns>
         public bool CreateGroup(string[] sa) {
             bool result = false;
             try {
@@ -99,7 +114,14 @@ namespace nsDataRemoting {
             TraceMsg($"CreateGroup: {result}");
             return result;
         }
-
+        /// <summary>
+        /// OPC DA Subscription DataChanged event handler
+        /// Converts ItemValueResult to ValueResult and calls CallbackHandler.OnValueChanged
+        /// ValueResult.Index is the index of the  related data item in the CreateGroup.sa array
+        /// </summary>
+        /// <param name="subscriptionHandle">not used</param>
+        /// <param name="requestHandle">not used</param>
+        /// <param name="values">ItemValueResult array</param>
         void OnValueChange(object subscriptionHandle, object requestHandle, ItemValueResult[] values) {
             try {
                 var measurements = new ValueResult[values.Length]; int i = 0;
@@ -111,7 +133,10 @@ namespace nsDataRemoting {
             }
             catch (Exception ex) { ErrorTraceEx(ex, "OnValueChange"); }
         }
-
+        /// <summary>
+        /// Called by adapters' AttemptDisconnection method 
+        /// </summary>
+        /// <returns>True for successful disconnection</returns>
         public bool Disconnect() {
             bool result = false;
             try {
@@ -125,7 +150,9 @@ namespace nsDataRemoting {
             TraceMsg($"Disconnect: {result}");
             return result;
         }
-
+        /// <summary>
+        /// Called by adapters' Dispose method. To release any unmanaged resource used on the server side 
+        /// </summary>
         public void Dispose() {
             if (_disposed) return;
             try {
@@ -141,11 +168,17 @@ namespace nsDataRemoting {
             catch (Exception ex) { ErrorTraceEx(ex, "Dispose"); }
             TraceMsg($"Dispose: done");
         }
-
+        /// <summary>
+        /// Timestamped message to trace log
+        /// </summary>
+        /// <param name="msg">Text to log</param>
         static void TraceMsg(string msg) {
             Trace.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}");
         }
-
+        /// <summary>
+        /// Timestamped message to trace log with extended exception information
+        /// </summary>
+        /// <param name="msg">Header text for log entry</param>
         static void ErrorTraceEx(Exception ex, string msg) {
             string exmsg = string.Concat($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {msg}: ",
                 ex.Message, "\r\nSource: ", ex.Source, "\r\nMember: ", ex.TargetSite, "\r\nStack trace: ", ex.StackTrace);
