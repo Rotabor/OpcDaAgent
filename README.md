@@ -1,5 +1,5 @@
 # OpcDaAgent
-OpcDaAgent is the Windows service which acts as the OPC DA client and .Net Remotiong server to provide data for the OpenHistorian universal adapter (https://github.com/Rotabor/OpenHistorianRemoteDataAdapter).
+OpcDaAgent is the Windows service which acts as the OPC DA client and .Net Remoting server to provide data for the OpenHistorian universal adapter (https://github.com/Rotabor/OpenHistorianRemoteDataAdapter).
 It uses OPC Foundation Classic OPC .NET libraries.
 
 **Concept**
